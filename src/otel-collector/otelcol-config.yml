@@ -5,13 +5,14 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_PORT_GRPC}
+        endpoint: 0.0.0.0:${env:OTEL_COLLECTOR_PORT_GRPC}
       http:
-        endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_PORT_HTTP}
+        endpoint: 0.0.0.0:${env:OTEL_COLLECTOR_PORT_HTTP}
         cors:
           allowed_origins:
-            - "http://*"
-            - "https://*"
+            - "*"
+          allowed_headers:
+            - "*"
   httpcheck/frontend-proxy:
     targets:
       - endpoint: http://${env:FRONTEND_PROXY_ADDR}
@@ -205,7 +206,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [resourcedetection, memory_limiter, transform/sanitize_spans]
+      processors: [resourcedetection, memory_limiter]
       exporters: [otlp_grpc/jaeger, debug, spanmetrics]
     metrics:
       receivers: [docker_stats, httpcheck/frontend-proxy, hostmetrics, nginx, otlp, postgresql, redis, spanmetrics]
