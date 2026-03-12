@@ -36,15 +36,17 @@ static_resources:
                     - name: frontend
                       domains:
                         - "*"
-                      cors:
-                        allow_origin_string_match:
-                          - safe_regex:
-                              google_re2: {}
-                              regex: ".*"
-                        allow_methods: "GET, PUT, DELETE, POST, OPTIONS"
-                        allow_headers: "keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout,traceparent,tracestate"
-                        max_age: "1728000"
-                        expose_headers: "custom-header-1,grpc-status,grpc-message"
+                      typed_per_filter_config:
+                        envoy.filters.http.cors:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.CorsPolicy
+                          allow_origin_string_match:
+                            - safe_regex:
+                                google_re2: {}
+                                regex: ".*"
+                          allow_methods: "GET, PUT, DELETE, POST, OPTIONS"
+                          allow_headers: "keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout,traceparent,tracestate"
+                          max_age: "1728000"
+                          expose_headers: "custom-header-1,grpc-status,grpc-message"
                       routes:
                         # - match: { path: "/loadgen" }
                         #   redirect: { path_redirect: "/loadgen/" }
@@ -52,7 +54,6 @@ static_resources:
                         #   route: { cluster: loadgen, prefix_rewrite: "/" }
                         - match: { prefix: "/otlp-http/" }
                           route: { cluster: opentelemetry_collector_http, prefix_rewrite: "/" }
-                          cors: {}
                         - match: { path: "/jaeger" }
                           redirect: { path_redirect: "/jaeger/" }
                         - match: { prefix: "/jaeger/" }
