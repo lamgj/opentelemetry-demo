@@ -12,9 +12,6 @@ networks:
   default:
     name: opentelemetry-demo
     driver: bridge
-  otel_network:
-    external: true
-    name: opentelemetry-demo
 
 services:
   # # ******************
@@ -748,9 +745,6 @@ services:
       - POSTGRES_PORT
       - POSTGRES_PASSWORD
       - GOMEMLIMIT=160MiB
-    networks:
-      - otel_network
-      - default
 
   # Prometheus
   prometheus:
